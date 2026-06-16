@@ -16,10 +16,11 @@ from pathlib import Path
 
 # Vercel deployment workaround for Google Cloud credentials.
 # Vercel cannot easily store files for environment variables, so we
-# read the JSON string from GOOGLE_CREDENTIALS_JSON and write it to /tmp.
-if "GOOGLE_CREDENTIALS_JSON" in os.environ:
+# read the JSON string and write it to /tmp.
+gcp_json = os.environ.get("GOOGLE_CREDENTIALS_JSON") or os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+if gcp_json and gcp_json.strip().startswith("{"):
     with open("/tmp/gcp_key.json", "w") as f:
-        f.write(os.environ["GOOGLE_CREDENTIALS_JSON"])
+        f.write(gcp_json)
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/tmp/gcp_key.json"
 
 from fastapi import FastAPI, Request, Response
