@@ -156,7 +156,12 @@ def create_app() -> FastAPI:
                 )
         return await call_next(request)
 
-    # API routes.
+    # API routes (standard /api prefix for local dev and Docker container)
+    app.include_router(health.router, prefix="/api")
+    app.include_router(calculate.router, prefix="/api")
+    app.include_router(entries.router, prefix="/api")
+
+    # Fallback routes (no prefix, supporting Vercel experimentalServices strip-prefix)
     app.include_router(health.router)
     app.include_router(calculate.router)
     app.include_router(entries.router)
